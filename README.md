@@ -23,6 +23,7 @@ body {
 .titulo h1 {
   font-family: 'Orbitron';
   color: #cc5a00;
+  font-size: 60px;
 }
 
 .topo {
@@ -104,8 +105,14 @@ th:nth-child(1), td:nth-child(0){
 
 th:nth-child(2), td:nth-child(0){
   position: sticky;
-  left: 40px;
+  left: 20px;
   background: #333;
+}
+.titulo span {
+  font-size: 11px;
+  color: #888;
+  display: block;
+  margin-top: -5px;
 }
 </style>
 </head>
