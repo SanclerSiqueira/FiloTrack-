@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FiloTrack</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+
+<style>
+body {
+  font-family: Arial;
+  background: #f4f4f4;
+  margin: 0;
+  padding: 10px;
+}
+
+.titulo {
+  text-align: center;
+}
+
+.titulo h1 {
+  font-family: 'Orbitron';
+  color: #cc5a00;
+}
+
+.topo {
+  text-align: center;
+  margin: 10px;
+}
+
+button {
+  padding: 8px;
+  margin: 5px;
+  background: #ff7a00;
+  color: black;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.tabela-container {
+  overflow-x: auto;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  min-width: 1050px;
+  background: white;
+}
+
+th, td {
+  border: 1px solid #ccc;
+  padding: 4px;
+  text-align: center;
+  font-size: 12px;
+}
+
+th {
+  background: #333;
+  color: white;
+  position: sticky;
+  top: 0;
+}
+
+/* QUANTIDADE */
+.quantidade {
+  width: 40px;
+  min-width: 40px;
+}
+
+/* DESCRIÇÃO */
+.descricao {
+  min-width: 160px;
+}
+
+/* MDF */
+.mdf {
+  background: linear-gradient(45deg,#b71c1c,#ff5252);
+  color: white;
+}
+
+/* FILETAMENTO */
+.borda {
+  width: 35px;
+  min-width: 35px;
+  background: linear-gradient(45deg,#b71c1c,#ff5252);
+  color: white;
+}
+
+td {
+  background: #eef;
+}
+
+/* TRAVAR COLUNAS */
+th:nth-child(1), td:nth-child(0){
+  position: sticky;
+  left: 0;
+  background: rgb(0, 0, 0);
+}
+
+th:nth-child(2), td:nth-child(0){
+  position: sticky;
+  left: 40px;
+  background: #333;
+}
+</style>
+</head>
+
+<body>
+
+<div class="titulo">
+  <h1>FiloTrack</h1>
+  <span>by: Sancler Siqueira</span>
+</div>
+
+<div class="topo">
+  <button onclick="addRow()">➕ Adicionar Linha</button>
+  <button onclick="exportImage()">📸 Salvar como Imagem</button>
+</div>
+
+<div class="tabela-container" id="areaExport">
+<table>
+
+<thead>
+<tr>
+<th class="quantidade">QUANTIDADE DE PEÇAS</th>
+<th class="descricao">DESCRIÇÃO DE PEÇAS</th>
+<th class="mdf">QUAL MDF?</th>
+<th>ESPESSURA</th>
+<th>COMPRIMENTO</th>
+<th>LARGURA</th>
+<th class="borda">FILETAMENTO BORDA COMPRIMENTO</th>
+<th class="borda">FILETAMENTO BORDA COMPRIMENTO</th>
+<th class="borda">FILETAMENTO BORDA LARGURA</th>
+<th class="borda">FILETAMENTO BORDA LARGURA</th>
+</tr>
+</thead>
+
+<tbody id="body"></tbody>
+
+</table>
+</div>
+
+<script>
+const cols = 10;
+
+function addRow(data = []) {
+  const tr = document.createElement("tr");
+
+  for (let i = 0; i < cols; i++) {
+    const td = document.createElement("td");
+
+    if (i >= 6) {
+      td.innerHTML = "⬜";
+
+      td.onclick = () => {
+        td.innerHTML = td.innerHTML === "⬜" ? "✅" : "⬜";
+        save();
+      };
+
+    } else {
+      td.contentEditable = true;
+      td.innerText = data[i] || "";
+
+      td.oninput = () => {
+        if (i === 0) {
+          td.innerText = td.innerText.replace(/[^0-9]/g, "").slice(0,3);
+        }
+        save();
+      };
+    }
+
+    tr.appendChild(td);
+  }
+
+  document.getElementById("body").appendChild(tr);
+}
+
+function save() {
+  localStorage.setItem("filoTrack", document.getElementById("body").innerHTML);
+}
+
+function load() {
+  const data = localStorage.getItem("filoTrack");
+
+  if (data) {
+    document.getElementById("body").innerHTML = data;
+
+    document.querySelectorAll("#body tr").forEach(tr => {
+      tr.querySelectorAll("td").forEach((td,i) => {
+
+        if (i >= 6) {
+          td.onclick = () => {
+            td.innerHTML = td.innerHTML === "⬜" ? "✅" : "⬜";
+            save();
+          };
+        } else {
+          td.oninput = () => {
+            if (i === 0) {
+              td.innerText = td.innerText.replace(/[^0-9]/g, "").slice(0,3);
+            }
+            save();
+          };
+        }
+
+      });
+    });
+
+  } else {
+    for (let i = 0; i < 5; i++) addRow();
+  }
+}
+
+function exportImage() {
+  html2canvas(document.getElementById("areaExport")).then(canvas => {
+    const link = document.createElement("a");
+    link.download = "filotrack.png";
+    link.href = canvas.toDataURL();
+    link.click();
+  });
+}
+
+load();
+</script>
+
+</body>
+</html>
